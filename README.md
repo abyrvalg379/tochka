@@ -22,8 +22,7 @@ Select vertices / edges / faces (edit mode) or objects (object mode), press **D*
 clean single-step undo. Works across multi-object edit: every object gets its
 own origin from its local selection.
 
-Anchors: **Median** (selection center), **Bottom** (XY median + lowest Z,
-game-ready), **Top**.
+Anchors: **Median** (selection center), **Bottom** (XY median + lowest Z), **Top**.
 
 ### Drag Pivot — `Ctrl+D`
 Interactively drag the pivot over the surface (raycast, works on any visible
