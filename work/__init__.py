@@ -1,7 +1,7 @@
 bl_info = {
     "name": "TOCHKA",
     "author": "Maksim Kovalev",
-    "version": (1, 0, 1),
+    "version": (1, 0, 3),
     "blender": (4, 2, 0),
     "location": "View3D > Sidebar > TOCHKA, hotkey D (pie: Alt+D, drag: Ctrl+D, rotate pivot: Ctrl+Alt+D, align: panel/pie)",
     "description": "Move object origin to the current selection",
@@ -384,6 +384,7 @@ class TOCHKA_OT_drag_pivot(Operator):
             bmesh.update_edit_mesh(self.obj.data)
         else:
             _move_origin(self.obj, pt)
+        context.view_layer.update()  # flush: keeps mesh+location in one undo step
 
     def _cleanup(self, context):
         bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
@@ -504,6 +505,7 @@ class TOCHKA_OT_origin_to_selection(Operator):
         if not done:
             self.report({"WARNING"}, "Nothing selected")
             return {"CANCELLED"}
+        context.view_layer.update()  # flush: keeps mesh+location in one undo step
         return {"FINISHED"}
 
 
@@ -791,6 +793,7 @@ class TOCHKA_OT_rotate_pivot(Operator):
                 M_new = self._matrix()
                 self.obj.data.transform(M_new.inverted() @ M_old)  # keep world geometry
                 self.obj.matrix_world = M_new
+                context.view_layer.update()  # flush: single undo step
             self.report({"INFO"}, "Pivot rotated")
             return {"FINISHED"}
 
@@ -1044,6 +1047,7 @@ class TOCHKA_OT_align_pivot(Operator):
                 M_new = self._matrix()
                 self.obj.data.transform(M_new.inverted() @ M_old)
                 self.obj.matrix_world = M_new
+                context.view_layer.update()  # flush: single undo step
                 self.report({"INFO"}, "Pivot aligned to normal")
             return {"FINISHED" if ok else "CANCELLED"}
 
@@ -1239,6 +1243,7 @@ class TOCHKA_OT_align_pivot_edge(Operator):
                 M_new = self._matrix()
                 self.obj.data.transform(M_new.inverted() @ M_old)
                 self.obj.matrix_world = M_new
+                context.view_layer.update()  # flush: single undo step
                 self.report({"INFO"}, "Pivot aligned to edge")
             return {"FINISHED" if ok else "CANCELLED"}
 
@@ -1344,8 +1349,12 @@ addon_keymaps = []
 
 def register_keymaps():
     wm = bpy.context.window_manager
+    # keyconfigs.addon entries may not reach the live keymaps for extensions
+    # until Blender restarts — register into the active (user) keyconfig,
+    # unregister_keymaps() removes them again
+    kc = wm.keyconfigs.user or wm.keyconfigs.addon
     for km_name in ("Mesh", "Object Mode"):
-        km = wm.keyconfigs.addon.keymaps.new(km_name, space_type="EMPTY")
+        km = kc.keymaps.new(km_name, space_type="EMPTY")
         kmi = km.keymap_items.new("tochka.origin_to_selection", type="D", value="PRESS", ctrl=False)
         kmi.properties.anchor = "MEDIAN"
         addon_keymaps.append((km, kmi))
@@ -1374,15 +1383,25 @@ classes = (TOCHKA_props, TOCHKA_OT_origin_to_selection, TOCHKA_OT_drag_pivot,
            TOCHKA_PT_main, TOCHKA_PT_info)
 
 
+def _undo_post_flush(_scene=None):
+    """After undo, force the depsgraph to re-evaluate: otherwise objects whose
+    mesh+origin changed can keep a stale evaluated transform on screen."""
+    bpy.context.view_layer.update()
+
+
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
     bpy.types.Scene.tochka_props = PointerProperty(type=TOCHKA_props)
     register_keymaps()
+    if _undo_post_flush not in bpy.app.handlers.undo_post:
+        bpy.app.handlers.undo_post.append(_undo_post_flush)
     print("TOCHKA %s REGISTERED" % VERSION_STR)
 
 
 def unregister():
+    if _undo_post_flush in bpy.app.handlers.undo_post:
+        bpy.app.handlers.undo_post.remove(_undo_post_flush)
     unregister_keymaps()
     del bpy.types.Scene.tochka_props
     for cls in reversed(classes):

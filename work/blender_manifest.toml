@@ -1,7 +1,7 @@
-schema_version = "1.0.1"
+schema_version = "1.0.0"
 
 id = "tochka"
-version = "1.0.1"
+version = "1.0.3"
 name = "TOCHKA"
 tagline = "Move, drag, rotate and audit object pivots in one gesture"
 maintainer = "Maksim Kovalev"
