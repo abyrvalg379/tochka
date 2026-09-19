@@ -1,7 +1,7 @@
 bl_info = {
     "name": "TOCHKA",
     "author": "Maksim Kovalev",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (4, 2, 0),
     "location": "View3D > Sidebar > TOCHKA, hotkey D (pie: Alt+D, drag: Ctrl+D, rotate pivot: Ctrl+Alt+D, align: panel/pie)",
     "description": "Move object origin to the current selection",
@@ -586,7 +586,7 @@ class TOCHKA_PT_info(Panel):
         col.label(text="Ctrl+Alt+D — Rotate Pivot (object mode)")
         col.label(text="In rotate: move mouse — rotate")
         col.label(text="    X / Y / Z — axis (again: local)")
-        col.label(text="    no axis — view-axis rotate, Ctrl — 5-deg steps")
+        col.label(text="    Shift — fine, Ctrl — 5-deg, Ctrl+Shift — 1-deg")
         col.separator()
         col.label(text="Align Pivot to Normal (panel/pie):")
         col.label(text="    hover a face — pivot Z follows")
@@ -604,7 +604,7 @@ class TOCHKA_OT_rotate_pivot(Operator):
     bl_idname = "tochka.rotate_pivot"
     bl_label = "Rotate Pivot"
     bl_description = ("Rotate the pivot orientation without moving geometry "
-                      "(X/Y/Z: axis, again: local, Ctrl: 5-degree steps)")
+                      "(X/Y/Z: axis, again: local, Ctrl: 5-deg steps, Shift: fine)")
     bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
@@ -646,8 +646,8 @@ class TOCHKA_OT_rotate_pivot(Operator):
 
     def _status_text(self):
         ax = "view" if self.axis_key is None else "%s %s" % (self.axis_key, self.axis_space.lower())
-        return ("TOCHKA rotate pivot: %.1f deg around %s  |  X/Y/Z axis (again: local)  |  "
-                "Ctrl = 5-deg steps  |  LMB/Enter apply  |  RMB/Esc cancel"
+        return ("TOCHKA rotate pivot: %.2f deg around %s  |  X/Y/Z axis (again: local)  |  "
+                "Shift = fine, Ctrl = 5-deg, Ctrl+Shift = 1-deg  |  LMB/Enter apply  |  RMB/Esc cancel"
                 % (math.degrees(self.angle), ax))
 
     def _axis_world(self):
@@ -759,9 +759,9 @@ class TOCHKA_OT_rotate_pivot(Operator):
         if event.type == "MOUSEMOVE":
             self._mouse2d = (event.mouse_region_x, event.mouse_region_y)
             delta = event.mouse_x - self._start_x
-            self.angle = delta * 0.01
+            self.angle = delta * (0.001 if event.shift else 0.01)
             if event.ctrl:
-                step = math.radians(5.0)
+                step = math.radians(1.0 if event.shift else 5.0)
                 self.angle = round(self.angle / step) * step
             # preview is draw-only: mesh and matrix stay untouched until commit
             context.workspace.status_text_set(self._status_text())
