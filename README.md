@@ -57,10 +57,13 @@ anchor and lists offenders as one-click select buttons:
 
 ## Installation
 
-1. Edit → Preferences → Add-ons → Install
+Blender 4.2+ extension:
+
+1. Edit → Preferences → Get Extensions → ⌄ (Install from Disk)
 2. Pick `tochka_v1.0.0.zip` from the
    [latest release](https://github.com/abyrvalg379/tochka/releases/latest)
-3. Enable **TOCHKA**
+
+The add-on enables itself as **TOCHKA**.
 
 ## Hotkeys
 
