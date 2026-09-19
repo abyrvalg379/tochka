@@ -6,7 +6,7 @@
 
 TOCHKA is a pivot toolkit for Blender 4.2+ (tested in 5.2). It replaces the
 cursor-juggling workflow of "Set Origin" with direct, visual operators and adds
-a convention audit for game-ready assets.
+a convention audit for asset pipelines.
 
 | | |
 |---|---|
