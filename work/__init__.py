@@ -1,7 +1,7 @@
 bl_info = {
     "name": "TOCHKA",
     "author": "Maksim Kovalev",
-    "version": (1, 0, 3),
+    "version": (1, 0, 4),
     "blender": (4, 2, 0),
     "location": "View3D > Sidebar > TOCHKA, hotkey D (pie: Alt+D, drag: Ctrl+D, rotate pivot: Ctrl+Alt+D, align: panel/pie)",
     "description": "Move object origin to the current selection",
@@ -1349,10 +1349,10 @@ addon_keymaps = []
 
 def register_keymaps():
     wm = bpy.context.window_manager
-    # keyconfigs.addon entries may not reach the live keymaps for extensions
-    # until Blender restarts — register into the active (user) keyconfig,
-    # unregister_keymaps() removes them again
-    kc = wm.keyconfigs.user or wm.keyconfigs.addon
+    # STRICTLY the addon keyconfig: creating keymaps in the user config
+    # shadows/replaces the system "Object Mode"/"Mesh" keymaps and kills
+    # G/R/S in the viewport (and the damage is saved into userpref)
+    kc = wm.keyconfigs.addon
     for km_name in ("Mesh", "Object Mode"):
         km = kc.keymaps.new(km_name, space_type="EMPTY")
         kmi = km.keymap_items.new("tochka.origin_to_selection", type="D", value="PRESS", ctrl=False)
