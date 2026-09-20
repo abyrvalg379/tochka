@@ -1,5 +1,7 @@
 # TOCHKA
 
+![TOCHKA](docs/cover.png)
+
 **Blender-аддон: переместить, перетащить, повернуть и проверить пивот объекта — одним жестом.**
 
 *English documentation: [README.md](README.md)*
