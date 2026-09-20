@@ -1,7 +1,7 @@
 bl_info = {
     "name": "TOCHKA",
     "author": "Maksim Kovalev",
-    "version": (1, 0, 4),
+    "version": (1, 0, 5),
     "blender": (4, 2, 0),
     "location": "View3D > Sidebar > TOCHKA, hotkey D (pie: Alt+D, drag: Ctrl+D, rotate pivot: Ctrl+Alt+D, align: panel/pie)",
     "description": "Move object origin to the current selection",
@@ -1383,6 +1383,32 @@ classes = (TOCHKA_props, TOCHKA_OT_origin_to_selection, TOCHKA_OT_drag_pivot,
            TOCHKA_PT_main, TOCHKA_PT_info)
 
 
+_TRANSFORM_HINTS = ("transform.translate", "transform.rotate", "transform.resize")
+
+
+def _keymap_health_check():
+    """Guard against the 1.0.3-class damage: an Object Mode / Mesh keymap in
+    the user config without transform bindings kills G/R/S in the viewport.
+    Whatever broke it (a buggy add-on, a bad settings restore), rebuild the
+    keymap from defaults at startup."""
+    kc = bpy.context.window_manager.keyconfigs.user
+    if kc is None:
+        return
+    for km_name in ("Object Mode", "Mesh"):
+        km = next((k for k in kc.keymaps if k.name == km_name), None)
+        if km is None:
+            continue  # absent = factory defaults apply, healthy
+        ids = {i.idname for i in km.keymap_items if i.idname}
+        if not any(t in ids for t in _TRANSFORM_HINTS):
+            try:
+                with bpy.context.temp_override(keymap=km):
+                    bpy.ops.preferences.keymap_restore()
+                print("TOCHKA: repaired damaged '%s' keymap -> %d items"
+                      % (km_name, len(km.keymap_items)))
+            except Exception as e:
+                print("TOCHKA: keymap repair failed for '%s': %s" % (km_name, e))
+
+
 def _undo_post_flush(_scene=None):
     """After undo, force the depsgraph to re-evaluate: otherwise objects whose
     mesh+origin changed can keep a stale evaluated transform on screen."""
@@ -1394,6 +1420,10 @@ def register():
         bpy.utils.register_class(cls)
     bpy.types.Scene.tochka_props = PointerProperty(type=TOCHKA_props)
     register_keymaps()
+    # deferred: register-time context is restricted (_RestrictContext), so
+    # the keymap health check runs shortly after via a timer
+    if not bpy.app.timers.is_registered(_keymap_health_check):
+        bpy.app.timers.register(_keymap_health_check, first_interval=1.0)
     if _undo_post_flush not in bpy.app.handlers.undo_post:
         bpy.app.handlers.undo_post.append(_undo_post_flush)
     print("TOCHKA %s REGISTERED" % VERSION_STR)
