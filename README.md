@@ -1,5 +1,7 @@
 # TOCHKA
 
+![TOCHKA](docs/cover.png)
+
 **Blender add-on: move, drag, rotate and audit object pivots — in one gesture.**
 
 *Документация на русском: [README.ru.md](README.ru.md)*
