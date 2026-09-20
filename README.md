@@ -80,6 +80,20 @@ The add-on enables itself as **TOCHKA**.
 All tools are also available from the **TOCHKA** tab in the N-panel; the audit
 lives there too.
 
+## Troubleshooting
+
+**G/R/S (or other transform hotkeys) stopped working in the 3D viewport after
+updating TOCHKA?** Version 1.0.3 wrote its hotkeys into the user keymap and
+replaced the system Object Mode / Mesh keymaps. Fix without resetting all
+preferences:
+
+1. Update TOCHKA to **1.0.4 or newer**
+2. Preferences → Keymap → find **Object Mode** → click **Restore**
+3. Repeat for **Mesh**
+4. Preferences → ☰ → Save Preferences
+
+The issue does not exist in 1.0.4+ and was never present in 1.0.0–1.0.2.
+
 ## License
 
 GPL-3.0 — see [LICENSE](LICENSE).
