@@ -72,10 +72,13 @@ TOCHKA — набор инструментов для работы с пивот
 
 | Клавиша | Действие |
 |---|---|
-| `D` | Origin to Selection (Median) |
-| `Alt+D` | Pie-меню |
+| `D` | Origin to Selection — Median |
+| `D` (повторное, быстро) | цикл якоря: Bottom → Top |
 | `Ctrl+D` | Drag Pivot |
 | `Ctrl+Alt+D` | Rotate Pivot (объектный режим) |
+
+`Alt+D` осталась штатной (Duplicate Linked). Pie-меню доступно кнопкой
+в N-панели.
 
 Все инструменты также живут во вкладке **TOCHKA** N-панели; там же — аудит.
 
