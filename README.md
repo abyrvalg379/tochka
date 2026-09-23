@@ -72,10 +72,13 @@ The add-on enables itself as **TOCHKA**.
 
 | Key | Action |
 |---|---|
-| `D` | Origin to Selection (Median) |
-| `Alt+D` | Pie menu |
+| `D` | Origin to Selection — Median |
+| `D` (again, fast) | cycle anchor: Bottom → Top |
 | `Ctrl+D` | Drag Pivot |
 | `Ctrl+Alt+D` | Rotate Pivot (object mode) |
+
+`Alt+D` stays native (Duplicate Linked). The pie menu is available from the
+N-panel button.
 
 All tools are also available from the **TOCHKA** tab in the N-panel; the audit
 lives there too.

@@ -1,7 +1,7 @@
 bl_info = {
     "name": "TOCHKA",
     "author": "Maksim Kovalev",
-    "version": (1, 0, 5),
+    "version": (1, 1, 0),
     "blender": (4, 2, 0),
     "location": "View3D > Sidebar > TOCHKA, hotkey D (pie: Alt+D, drag: Ctrl+D, rotate pivot: Ctrl+Alt+D, align: panel/pie)",
     "description": "Move object origin to the current selection",
@@ -19,6 +19,11 @@ from bpy.types import Operator, Panel, Menu, PropertyGroup
 from bpy.props import EnumProperty, StringProperty, FloatProperty, IntProperty, CollectionProperty, PointerProperty
 
 VERSION_STR = ".".join(str(v) for v in bl_info["version"])
+
+# double-D: fast repeated presses cycle the anchor instead of re-running Median
+_DOUBLE_D_WINDOW = 0.35
+_double_d_state = {"t": 0.0, "anchor": "MEDIAN"}
+_ANCHOR_CYCLE = ("MEDIAN", "BOTTOM", "TOP")
 TOCHKA_DEBUG = False
 
 
@@ -482,6 +487,14 @@ class TOCHKA_OT_origin_to_selection(Operator):
         return context.mode in ("OBJECT", "EDIT_MESH")
 
     def execute(self, context):
+        import time
+        now = time.time()
+        if now - _double_d_state["t"] < _DOUBLE_D_WINDOW:
+            prev = _double_d_state["anchor"]
+            self.anchor = _ANCHOR_CYCLE[(_ANCHOR_CYCLE.index(prev) + 1) % len(_ANCHOR_CYCLE)]
+        _double_d_state["t"] = now
+        _double_d_state["anchor"] = self.anchor
+
         if context.mode == "OBJECT":
             objs = [o for o in context.selected_objects if o.type == "MESH"]
             if not objs:
@@ -574,6 +587,7 @@ class TOCHKA_PT_info(Panel):
         layout = self.layout
         col = layout.column(align=True)
         col.label(text="D — Origin to Selection (Median)")
+        col.label(text="    press D again fast — Bottom, then Top")
         col.label(text="Alt+D — Pie Menu")
         col.label(text="Ctrl+D — Drag Pivot")
         col.separator()
@@ -1358,9 +1372,7 @@ def register_keymaps():
         kmi = km.keymap_items.new("tochka.origin_to_selection", type="D", value="PRESS", ctrl=False)
         kmi.properties.anchor = "MEDIAN"
         addon_keymaps.append((km, kmi))
-        kmi = km.keymap_items.new("wm.call_menu_pie", type="D", value="PRESS", alt=True)
-        kmi.properties.name = "TOCHKA_MT_pie"
-        addon_keymaps.append((km, kmi))
+
         kmi = km.keymap_items.new("tochka.drag_pivot", type="D", value="PRESS", ctrl=True)
         addon_keymaps.append((km, kmi))
         if km_name == "Object Mode":
