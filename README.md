@@ -24,7 +24,9 @@ Select vertices / edges / faces (edit mode) or objects (object mode), press **D*
 clean single-step undo. Works across multi-object edit: every object gets its
 own origin from its local selection.
 
-Anchors: **Median** (selection center), **Bottom** (XY median + lowest Z), **Top**.
+Anchors by presses: **D** — **Median** (selection center), **DD** — **Bottom**
+(XY median + lowest Z), **DDD** — **Top** (highest Z). Presses must land in
+quick succession (0.35 s); a fourth press wraps back to Median.
 
 ### Drag Pivot — `Ctrl+D`
 Interactively drag the pivot over the surface (raycast, works on any visible
@@ -73,12 +75,12 @@ The add-on enables itself as **TOCHKA**.
 | Key | Action |
 |---|---|
 | `D` | Origin to Selection — Median |
-| `D` (again, fast) | cycle anchor: Bottom → Top |
+| `DD` (in quick succession) | — Bottom |
+| `DDD` (in quick succession) | — Top |
 | `Ctrl+D` | Drag Pivot |
 | `Ctrl+Alt+D` | Rotate Pivot (object mode) |
 
-`Alt+D` stays native (Duplicate Linked). The pie menu is available from the
-N-panel button.
+The pie menu is available from the N-panel button.
 
 All tools are also available from the **TOCHKA** tab in the N-panel; the audit
 lives there too.
