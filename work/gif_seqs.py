@@ -16,7 +16,7 @@ def seq_name(name, i):
 # ── 1) DRAG: marker glides across the plate, snaps to the corner vertex ──
 plate = g["plate"]
 import sys
-sys.path.insert(0, r"C:\Users/<user>\AppData\Roaming\Blender Foundation\Blender\5.2\scripts\addons\tochka")
+sys.path.insert(0, r"C:\Users\<user>\AppData\Roaming\Blender Foundation\Blender\5.2\scripts\addons\tochka")
 import __init__ as tk
 import importlib
 importlib.reload(tk)
