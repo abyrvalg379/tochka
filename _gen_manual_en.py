@@ -7,7 +7,8 @@ import json
 
 import _docstyle as ds
 
-OUT = r'D:\AI\ZCode\Project\TOCHKA\docs\TOCHKA_Manual_EN.docx'
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                   'docs', 'TOCHKA_Manual_EN.docx')
 
 
 def h1(doc, text):

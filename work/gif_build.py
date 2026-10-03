@@ -7,7 +7,13 @@ import numpy as np
 from gpu_extras.batch import batch_for_shader
 from mathutils import Vector, Matrix
 
-OUT = r"D:\AI\ZCode\Project\TOCHKA\docs\img"
+# docs/img of the repository; via bridge exec() there is no __file__,
+# so run from the repo work/ folder (or set TOCHKA_DOCS)
+try:
+    _HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+except NameError:
+    _HERE = os.environ.get("TOCHKA_DOCS", os.getcwd())
+OUT = os.path.join(_HERE, "docs", "img")
 FRAMES = os.path.join(OUT, "frames")
 os.makedirs(FRAMES, exist_ok=True)
 

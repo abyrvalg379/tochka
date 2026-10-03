@@ -19,8 +19,7 @@ import sys
 import pymupdf
 
 SOFFICE = r'C:\Program Files\LibreOffice\program\soffice.exe'
-PLACEHOLDER = (r'C:\Users/<user>\.zcode\cli\plugins\cache\zcode-plugins-official'
-               r'\documents\0.1.7\skills\docx\scripts\add_toc_placeholders.py')
+PLACEHOLDER = os.environ.get('TOC_HELPER', 'add_toc_placeholders.py')
 
 
 def convert(name):
